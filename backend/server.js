@@ -10,8 +10,14 @@ require('dotenv').config(); // Para carregar as variáveis de ambiente (sua chav
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configurações do servidor
-app.use(cors()); // Permite que o frontend acesse este servidor
+// --- CONFIGURAÇÃO DE CORS ATUALIZADA ---
+// Define qual domínio tem permissão para acessar este backend.
+const corsOptions = {
+  origin: 'https://apps.grupobhds.com' // Permite requisições do seu domínio personalizado
+};
+
+// Aplica as configurações de CORS e JSON
+app.use(cors(corsOptions));
 app.use(express.json()); // Permite que o servidor entenda JSON
 
 // Rota para criar uma nova cobrança PIX
