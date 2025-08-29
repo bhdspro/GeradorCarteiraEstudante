@@ -171,7 +171,7 @@
         .download-button:hover { background-color: #1565c0; }
         .download-button:disabled { background-color: #999; cursor: not-allowed; }
 
-        /* --- ESTILOS DO MODAL DE PAGAMENTO --- */
+        /* Modal de pagamento */
         .payment-modal-overlay {
             display: none;
             position: fixed;
@@ -208,18 +208,31 @@
     <div class="container">
         <div class="card-preview" id="cardPreview">
             <div class="card-content">
-                <div class="photo-container" id="photoContainer"><img id="studentPhoto" alt="Foto do Aluno"><div class="photo-placeholder">Carregar Foto</div></div>
+                <div class="photo-container" id="photoContainer">
+                    <img id="studentPhoto" alt="Foto do Aluno">
+                    <div class="photo-placeholder">Carregar Foto</div>
+                </div>
                 <h3 id="previewName">Nome do Aluno</h3>
                 <p id="previewCourse">Curso</p>
-                <div class="card-info"><span>RGM: <span id="previewRGM">0000000-0</span></span><span>VAL: <span id="previewValidity">12/2028</span></span></div>
-                <div class="university-logo"><img id="universityLogoPreview" alt="Logo da Universidade"><p id="universityNameText">NOME DA UNIVERSIDADE</p></div>
+                <div class="card-info">
+                    <span>RGM: <span id="previewRGM">0000000-0</span></span>
+                    <span>VAL: <span id="previewValidity">12/2028</span></span>
+                </div>
+                <div class="university-logo">
+                    <img id="universityLogoPreview" alt="Logo da Universidade">
+                    <p id="universityNameText">NOME DA UNIVERSIDADE</p>
+                </div>
             </div>
         </div>
+
         <div class="form-container">
             <h2>Gerador de Carteirinha</h2>
             <div class="form-group"><label for="studentName">Nome Completo</label><input type="text" id="studentName" placeholder="Ex: Josiel Althoff Di Prospero"></div>
             <div class="form-group"><label for="studentCourse">Curso</label><input type="text" id="studentCourse" placeholder="Ex: Animação Digital"></div>
-            <div class="two-columns"><div class="form-group"><label for="studentRGM">RGM</label><input type="text" id="studentRGM" placeholder="Ex: 04593658-7"></div><div class="form-group"><label for="cardValidity">Validade</label><input type="text" id="cardValidity" placeholder="Ex: 12/2028"></div></div>
+            <div class="two-columns">
+                <div class="form-group"><label for="studentRGM">RGM</label><input type="text" id="studentRGM" placeholder="Ex: 04593658-7"></div>
+                <div class="form-group"><label for="cardValidity">Validade</label><input type="text" id="cardValidity" placeholder="Ex: 12/2028"></div>
+            </div>
             <div class="form-group"><label for="universityName">Nome da Universidade</label><input type="text" id="universityName" placeholder="Ex: CRUZEIRO DO SUL"></div>
             <div class="form-group"><label for="studentPhotoUpload">Foto do Aluno</label><input type="file" id="studentPhotoUpload" accept="image/*"></div>
             <div class="form-group"><label for="universityLogoUpload">Logo da Universidade (opcional)</label><input type="file" id="universityLogoUpload" accept="image/*"></div>
@@ -237,11 +250,9 @@
     </div>
 
     <script>
-        // --- CONFIGURAÇÃO ---
-        // !!! IMPORTANTE: Após o deploy, coloque aqui a URL do seu backend no Render
-        const BACKEND_URL = 'https://geradorcarteiraestudante.onrender.com'; 
+        const BACKEND_URL = 'https://geradorcarteiraestudante.onrender.com';
 
-        // --- SELEÇÃO DE ELEMENTOS ---
+        // Elementos
         const studentNameInput = document.getElementById('studentName');
         const studentCourseInput = document.getElementById('studentCourse');
         const studentRGMInput = document.getElementById('studentRGM');
@@ -263,9 +274,8 @@
         const paymentStatusText = document.getElementById('payment-status');
         const qrCodeCanvas = document.getElementById('qrcode-canvas');
 
-        let paymentCheckInterval = null; // Variável para controlar a verificação de pagamento
+        let paymentCheckInterval = null;
 
-        // --- LÓGICA DE ATUALIZAÇÃO DA PRÉVIA (sem alterações) ---
         function updatePreview() {
             previewName.textContent = studentNameInput.value || 'Nome do Aluno';
             previewCourse.textContent = studentCourseInput.value || 'Curso';
@@ -273,45 +283,67 @@
             previewValidity.textContent = cardValidityInput.value || '12/2028';
             universityNameText.textContent = universityNameInput.value || 'NOME DA UNIVERSIDADE';
         }
+
         studentNameInput.addEventListener('input', updatePreview);
         studentCourseInput.addEventListener('input', updatePreview);
         studentRGMInput.addEventListener('input', updatePreview);
         cardValidityInput.addEventListener('input', updatePreview);
         universityNameInput.addEventListener('input', updatePreview);
-        studentPhotoUpload.addEventListener('change', function(event) {
-            const file = event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = function(e) { studentPhoto.src = e.target.result; studentPhoto.style.display = 'block'; photoPlaceholder.style.display = 'none'; }; reader.readAsDataURL(file); } else { studentPhoto.style.display = 'none'; photoPlaceholder.style.display = 'block'; }
-        });
-        universityLogoUpload.addEventListener('change', function(event) {
-            const file = event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = function(e) { universityLogoPreview.src = e.target.result; universityLogoPreview.style.display = 'block'; universityNameText.style.display = 'none'; }; reader.readAsDataURL(file); } else { universityLogoPreview.style.display = 'none'; universityNameText.style.display = 'block'; }
-        });
-        updatePreview();
-        
-        // --- NOVA LÓGICA DE PAGAMENTO E DOWNLOAD ---
 
-        // 1. Inicia o fluxo de pagamento
+        studentPhotoUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0]; 
+            if (file) { 
+                const reader = new FileReader(); 
+                reader.onload = function(e) { 
+                    studentPhoto.src = e.target.result; 
+                    studentPhoto.style.display = 'block'; 
+                    photoPlaceholder.style.display = 'none'; 
+                }; 
+                reader.readAsDataURL(file); 
+            } else { 
+                studentPhoto.style.display = 'none'; 
+                photoPlaceholder.style.display = 'block'; 
+            }
+        });
+
+        universityLogoUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0]; 
+            if (file) { 
+                const reader = new FileReader(); 
+                reader.onload = function(e) { 
+                    universityLogoPreview.src = e.target.result; 
+                    universityLogoPreview.style.display = 'block'; 
+                    universityNameText.style.display = 'none'; 
+                }; 
+                reader.readAsDataURL(file); 
+            } else { 
+                universityLogoPreview.style.display = 'none'; 
+                universityNameText.style.display = 'block'; 
+            }
+        });
+
+        updatePreview();
+
+        // --- Pagamento PIX via Asaas ---
         initiatePaymentBtn.addEventListener('click', async function() {
             this.disabled = true;
             this.textContent = 'Gerando PIX...';
             
             try {
-                // Chama nosso backend para criar a cobrança
                 const response = await fetch(`${BACKEND_URL}/create-payment`, { method: 'POST' });
                 if (!response.ok) throw new Error('Falha ao gerar o QR Code.');
                 
                 const data = await response.json();
-                
-                // Gera o QR Code na tela usando a biblioteca Qrious
+
                 new QRious({
                     element: qrCodeCanvas,
-                    value: data.qrCodeText,
+                    value: data.qrCode,
                     size: 200,
                     level: 'H'
                 });
 
-                paymentModal.style.display = 'flex'; // Mostra o modal
-                
-                // Começa a verificar o status do pagamento
-                startPaymentCheck(data.orderId);
+                paymentModal.style.display = 'flex';
+                startPaymentCheck(data.paymentId);
 
             } catch (error) {
                 console.error(error);
@@ -322,25 +354,22 @@
             }
         });
 
-        // 2. Função que verifica o pagamento a cada 5 segundos
-        function startPaymentCheck(orderId) {
+        function startPaymentCheck(paymentId) {
             if (paymentCheckInterval) clearInterval(paymentCheckInterval);
 
             paymentCheckInterval = setInterval(async () => {
                 try {
-                    const response = await fetch(`${BACKEND_URL}/check-payment/${orderId}`);
+                    const response = await fetch(`${BACKEND_URL}/check-payment/${paymentId}`);
                     const data = await response.json();
 
                     if (data.status === 'PAID') {
-                        clearInterval(paymentCheckInterval); // Para de verificar
+                        clearInterval(paymentCheckInterval);
                         paymentStatusText.textContent = 'Pagamento Aprovado!';
                         paymentStatusText.style.color = 'green';
                         
-                        // Aguarda um pouco e inicia o download
                         setTimeout(() => {
                             downloadCardImage();
                             paymentModal.style.display = 'none';
-                            // Reseta o status do modal para a próxima vez
                             paymentStatusText.textContent = 'Aguardando pagamento...';
                             paymentStatusText.style.color = '#666';
                         }, 1500);
@@ -350,10 +379,9 @@
                 } catch (error) {
                     console.error('Erro ao verificar pagamento:', error);
                 }
-            }, 5000); // Verifica a cada 5 segundos
+            }, 5000);
         }
 
-        // 3. Função de download (chamada após o pagamento)
         function downloadCardImage() {
             const node = cardPreview;
             const scale = 2;
@@ -372,15 +400,13 @@
                 })
                 .catch(error => console.error('Erro ao gerar a imagem:', error));
         }
-        
-        // Fecha o modal se o usuário clicar fora ou se o pagamento for cancelado
+
         paymentModal.addEventListener('click', function(event) {
             if (event.target === paymentModal) {
                 paymentModal.style.display = 'none';
-                clearInterval(paymentCheckInterval); // Para de verificar
+                clearInterval(paymentCheckInterval);
             }
         });
-
     </script>
 </body>
 </html>
