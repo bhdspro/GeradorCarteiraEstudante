@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>É Fundo de Funil? - Analisador de Termos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top: 4px solid #8B5CF6; /* Roxo */
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .text-gradient {
+            background: linear-gradient(to right, #60A5FA, #A78BFA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Estilo para o placeholder do anúncio */
+        .ad-placeholder {
+            background-color: #374151; /* gray-700 */
+            border: 2px dashed #6b7280; /* gray-500 */
+            color: #9ca3af; /* gray-400 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.875rem;
+            width: 100%;
+            height: 90px;
+            margin-top: 1rem;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900">
+
+    <main class="w-full max-w-2xl mx-auto bg-black/30 backdrop-blur-xl border border-white/10 p-6 sm:p-8 rounded-2xl shadow-2xl shadow-purple-500/10">
+        <!-- Cabeçalho -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gradient">É Fundo de Funil?</h1>
+            <p class="mt-3 text-gray-400">Descubra se o nome é fundo de funil</p>
+        </div>
+
+        <!-- Formulário de Entrada -->
+        <div class="flex flex-col sm:flex-row gap-3 mb-6">
+            <input type="text" id="searchTerm" placeholder="Digite um nome, produto ou marca..." class="flex-grow w-full px-5 py-3 text-lg bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-white placeholder-gray-500">
+            <button id="analyzeBtn" class="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold px-8 py-3 text-lg rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-all transform hover:scale-105">
+                Analisar
+            </button>
+        </div>
+        
+        <!-- Área de Resultado e Carregamento -->
+        <div id="resultArea" class="mt-4 flex items-center justify-center transition-all duration-300 min-h-[50px]">
+            <!-- Placeholder inicial -->
+            <p id="initialPlaceholder" class="text-gray-600"></p>
+
+            <!-- Estado de Carregamento -->
+            <div id="loader" class="hidden flex-col items-center justify-center text-center p-6 rounded-lg">
+                <div class="loader"></div>
+                <p class="mt-4 text-gray-400 font-medium">Analisando com a IA... um momento.</p>
+            </div>
+            
+            <!-- Card de Resultado -->
+            <div id="resultCard" class="hidden p-6 rounded-lg transition-all duration-500 w-full border border-white/10">
+                <div id="resultContent">
+                    <h2 class="text-2xl font-bold mb-3 flex items-center gap-3 text-gray-300">
+                        <span id="verdictIcon"></span>
+                        <span>Resultado:</span>
+                    </h2>
+                    <p id="verdictText" class="text-6xl font-extrabold mb-5"></p>
+                    <div class="border-t border-white/10 pt-4">
+                        <h3 class="text-lg font-semibold mb-2 text-gray-200">Explicação Simples:</h3>
+                        <p id="explanation" class="text-gray-400 leading-relaxed"></p>
+                    </div>
+                </div>
+                <!-- Placeholder do Anúncio -->
+                <div id="adContainer" class="hidden">
+                     <!-- CÓDIGO DO GOOGLE ADSENSE VAI AQUI -->
+                     <div class="ad-placeholder">
+                        Espaço para Anúncio do Google
+                     </div>
+                </div>
+            </div>
+
+            <!-- Card de "Click Gate" -->
+            <div id="adGateCard" class="hidden p-6 rounded-lg text-center w-full border border-amber-500/30 bg-amber-900/20">
+                <h2 class="text-xl font-bold mb-2 text-amber-300">Sua Análise está Pronta!</h2>
+                <p class="text-amber-400 mb-4">Clique no anúncio abaixo para revelar sua resposta.</p>
+                <p class="text-xs text-gray-500 -mt-3 mb-4">(Isso nos ajuda a manter a ferramenta gratuita)</p>
+                <div class="ad-placeholder">
+                    <!-- CÓDIGO DO GOOGLE ADSENSE VAI AQUI -->
+                    Espaço para Anúncio do Google
+                </div>
+            </div>
+
+             <!-- Card de Erro -->
+            <div id="errorCard" class="hidden p-6 rounded-lg bg-red-900/50 border border-red-500/30 text-red-300 w-full">
+                <h2 class="text-xl font-bold mb-2">Ops! Algo deu errado.</h2>
+                <p id="errorMessage">Não foi possível analisar o termo. Por favor, tente novamente mais tarde.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Elementos da UI
+        const searchTermInput = document.getElementById('searchTerm');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const initialPlaceholder = document.getElementById('initialPlaceholder');
+        const loader = document.getElementById('loader');
+        const resultCard = document.getElementById('resultCard');
+        const adContainer = document.getElementById('adContainer');
+        const errorCard = document.getElementById('errorCard');
+        const verdictIcon = document.getElementById('verdictIcon');
+        const verdictText = document.getElementById('verdictText');
+        const explanation = document.getElementById('explanation');
+        const errorMessage = document.getElementById('errorMessage');
+        const adGateCard = document.getElementById('adGateCard');
+
+        // Lógica do Contador e Anti-Bypass
+        let queryCount = parseInt(localStorage.getItem('queryCount')) || 0;
+        const FREE_QUERIES_LIMIT = 1;
+        let lastAnalysisResult = null;
+        let adClickListenerActive = false;
+        let revealTimeout = null;
+
+        async function handleAnalysis() {
+            const term = searchTermInput.value.trim();
+            if (!term) return;
+
+            initialPlaceholder.classList.add('hidden');
+            resultCard.classList.add('hidden');
+            errorCard.classList.add('hidden');
+            adGateCard.classList.add('hidden');
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
+
+            try {
+                const resultData = await analyzeTerm(term);
+                lastAnalysisResult = resultData;
+                
+                queryCount++;
+                localStorage.setItem('queryCount', queryCount);
+
+                if (queryCount > FREE_QUERIES_LIMIT) {
+                    loader.classList.add('hidden');
+                    adGateCard.classList.remove('hidden');
+                    setupAdClickListener();
+                } else {
+                    displayResult(resultData.isBranded, resultData.explanation);
+                }
+            } catch (error) {
+                console.error("Erro no fluxo de análise:", error);
+                displayError(error.message);
+            } finally {
+                if (queryCount <= FREE_QUERIES_LIMIT) {
+                    loader.classList.add('hidden');
+                    loader.classList.remove('flex');
+                }
+            }
+        }
+
+        async function analyzeTerm(term) {
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const prompt = `
+                Analise o termo a seguir: "${term}".
+
+                O termo é uma 'palavra-chave de marca' (fundo de funil)? Uma palavra-chave de marca é um nome específico e exclusivo de um produto, empresa ou pessoa.
+
+                A lista de palavras que geralmente indicam um nome de produto específico é: método, desafio, academy, escola, clube, programa, fórmula, premium, formação, elite, pro, gourmet, academia, 1.0, 2.0, 3.0, combo, comunidade, conexão, descomplicando, descomplicado, despertar, expert, express, fábrica, jornada, kit, mapa, maratona, mega, mentoria, ninja, oficina, pack, pacote, plano, prime, super, trilha, viver, coach, coaching, extra, exclusivo, full, completo, oficial, mestre, top, bônus, vitalício, play, black, sucesso, turbo, boost, booster.
+
+                REGRAS DE ANÁLISE CRÍTICAS:
+                1.  **Nomes de Pessoas (Metodologia do Afiliado):** Use seu conhecimento para simular o teste de um afiliado: uma busca no Google. Se os primeiros 8-10 resultados para o nome se referem dominantemente à mesma pessoa como uma autoridade no nicho de marketing digital (produtor, especialista, etc.), então é fundo de funil. Se os resultados são ambíguos, mostrando várias pessoas diferentes (jogadores de futebol, médicos, homônimos sem relação com o nicho), então NÃO é fundo de funil. Nomes muito comuns como 'Bruno Henrique' falham neste teste. Nomes como 'Maria Franco', 'Wendell Carvalho' e 'Caio Calderaro' passam neste teste, pois dominam os resultados de busca em seu contexto.
+                2.  **Produtos Genéricos:** Um termo composto por [tipo de produto] + [tópico] (ex: "Curso ChatGPT", "Mentoria de Vendas") NÃO é fundo de funil.
+                3.  **Filtros de Tempo:** Adicionar um ano (ex: 2025) a uma busca genérica (ex: "curso gemini") NÃO a torna fundo de funil.
+                4.  **Qualificadores:** O termo se torna fundo de funil quando ganha um 'sobrenome' ou qualificador que o torna único (ex: "Curso ChatGPT Extreme", "Método L5D").
+                5.  **Nomes de Empresas:** Nomes de empresas (ex: "Plataforma Inexplor") são sempre fundo de funil.
+
+                Sua tarefa é:
+                1.  Analisar o termo com base nas regras.
+                2.  Gerar a resposta em JSON: {"isBranded": boolean, "explanation": "string"}.
+                3.  **REQUISITO PARA A EXPLICAÇÃO:** Se a resposta for 'Sim', explique por que é um nome específico. Se for 'Não', explique por que a busca é genérica ou ambígua (mencionando o teste da busca no Google se for um nome de pessoa).
+
+                Exemplos de palavras-chave de marca (fundo de funil): "Curso Tráfego de Elite", "Caio Calderaro", "Wendell Carvalho", "Maria Franco", "Método Imagens Lucrativas", "Curso ChatGPT Extreme".
+                Exemplos de termos que NÃO são palavras-chave de marca: "curso de tráfego pago", "curso chatgpt", "mentoria de vendas", "curso gemini 2025", "Bruno Henrique".
+
+                Seja criativo e direto na explicação.
+            `;
+            const payload = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: { type: "OBJECT", properties: { "isBranded": { "type": "BOOLEAN" }, "explanation": { "type": "STRING" } }, required: ["isBranded", "explanation"] } } };
+            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const result = await response.json();
+            if (result.candidates && result.candidates[0]?.content.parts[0]) {
+                return JSON.parse(result.candidates[0].content.parts[0].text);
+            } else {
+                throw new Error("Resposta da API inválida ou vazia.");
+            }
+        }
+
+        function displayResult(isBranded, explanationText) {
+            resultCard.classList.remove('hidden');
+            
+            if (isBranded) {
+                verdictText.textContent = 'Sim!';
+                verdictText.classList.remove('text-amber-400');
+                verdictText.classList.add('text-green-400');
+                verdictIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+            } else {
+                verdictText.textContent = 'Não!';
+                verdictText.classList.remove('text-green-400');
+                verdictText.classList.add('text-amber-400');
+                verdictIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+            }
+            explanation.textContent = explanationText;
+            adContainer.classList.remove('hidden');
+        }
+        
+        function displayError(msg) {
+            loader.classList.add('hidden');
+            errorMessage.textContent = `Não foi possível analisar o termo. Detalhe: ${msg}`;
+            errorCard.classList.remove('hidden');
+        }
+
+        function revealGatedResult() {
+            if (lastAnalysisResult) {
+                adGateCard.classList.add('hidden');
+                displayResult(lastAnalysisResult.isBranded, lastAnalysisResult.explanation);
+                queryCount = 0;
+                localStorage.setItem('queryCount', queryCount);
+                cleanupAdListeners();
+            }
+        }
+
+        // Lógica Anti-Bypass
+        const handleBlurForAd = () => {
+            revealTimeout = setTimeout(() => {
+                revealGatedResult();
+            }, 2000); // Aguarda 2 segundos para confirmar que o usuário navegou
+        };
+
+        const handleFocusForAd = () => {
+            if (revealTimeout) {
+                clearTimeout(revealTimeout); // Cancela se o usuário voltar rápido demais
+                revealTimeout = null;
+            }
+        };
+
+        function setupAdClickListener() {
+            if (adClickListenerActive) return;
+            adClickListenerActive = true;
+            window.addEventListener('blur', handleBlurForAd);
+            window.addEventListener('focus', handleFocusForAd);
+        }
+
+        function cleanupAdListeners() {
+            window.removeEventListener('blur', handleBlurForAd);
+            window.removeEventListener('focus', handleFocusForAd);
+            adClickListenerActive = false;
+            if (revealTimeout) {
+                clearTimeout(revealTimeout);
+                revealTimeout = null;
+            }
+        }
+
+        // Event Listeners
+        analyzeBtn.addEventListener('click', handleAnalysis);
+        searchTermInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                handleAnalysis();
+            }
+        });
+
+    </script>
+</body>
+</html>
