@@ -72,12 +72,13 @@
             </div>
             <div class="p-6">
                 <div class="flex flex-col items-center text-center">
-                    <!-- FOTO DE PERFIL ATUALIZADA -->
-                    <img src="https://apps.grupobhds.com/asselm/associados/alexsandra-santos/foto.png" crossorigin="anonymous" alt="Foto do Associado" class="w-32 h-32 rounded-full border-4 border-white -mt-16 shadow-lg object-cover">
+                    <!-- FOTO DE PERFIL CORRIGIDA COM BACKGROUND-IMAGE -->
+                    <div style="background-image: url('https://apps.grupobhds.com/asselm/associados/alexsandra-santos/foto.png')" class="w-32 h-32 rounded-full border-4 border-white -mt-16 shadow-lg bg-cover bg-center" role="img" aria-label="Foto do Associado"></div>
                     <h1 class="text-2xl font-bold text-gray-800 mt-4">Alexsandra Ramos da Silva Santos</h1>
                     <div class="w-full text-left mt-6 space-y-3 text-gray-700">
-                        <div class="flex justify-between border-b pb-2"><span class="font-semibold text-gray-500">Nascimento:</span><span class="font-medium">27/06/1996</span></div>
+                        <!-- ORDEM ALTERADA -->
                         <div class="flex justify-between border-b pb-2"><span class="font-semibold text-gray-500">CPF:</span><span class="font-medium">101.613.***-62</span></div>
+                        <div class="flex justify-between border-b pb-2"><span class="font-semibold text-gray-500">Nascimento:</span><span class="font-medium">27/06/1996</span></div>
                         <div class="flex justify-between"><span class="font-semibold text-gray-500">Status:</span><span class="font-bold text-green-600">Ativo desde 2024</span></div>
                     </div>
                 </div>
@@ -99,12 +100,13 @@
                 </div>
                 <div class="p-4"> 
                     <div class="flex flex-col items-center text-center">
-                        <!-- FOTO DE PERFIL ATUALIZADA -->
-                        <img src="https://apps.grupobhds.com/asselm/associados/alexsandra-santos/foto.png" crossorigin="anonymous" alt="Foto do Associado" class="w-28 h-28 rounded-full border-4 border-white -mt-14 shadow-lg object-cover">
+                        <!-- FOTO DE PERFIL CORRIGIDA COM BACKGROUND-IMAGE -->
+                        <div style="background-image: url('https://apps.grupobhds.com/asselm/associados/alexsandra-santos/foto.png')" class="w-28 h-28 rounded-full border-4 border-white -mt-14 shadow-lg bg-cover bg-center" role="img" aria-label="Foto do Associado"></div>
                         <h1 class="text-lg font-bold text-gray-800 mt-3">Alexsandra Ramos da Silva Santos</h1>
                         <div class="w-full text-left mt-3 space-y-1 text-xs text-gray-700">
-                            <div class="flex justify-between border-b pb-3"><span class="font-semibold text-gray-500">Nascimento:</span><span class="font-medium">27/06/1996</span></div>
+                            <!-- ORDEM ALTERADA -->
                             <div class="flex justify-between border-b pb-3"><span class="font-semibold text-gray-500">CPF:</span><span class="font-medium">101.613.***-62</span></div>
+                            <div class="flex justify-between border-b pb-3"><span class="font-semibold text-gray-500">Nascimento:</span><span class="font-medium">27/06/1996</span></div>
                             <div class="flex justify-between pt-1"><span class="font-semibold text-gray-500">Status:</span><span class="font-bold text-green-600">Ativo desde 2024</span></div>
                         </div>
                     </div>
@@ -130,8 +132,9 @@
 
     <!-- Download Button - Hidden on print -->
     <div class="no-print mt-6 text-center">
+        <!-- TEXTO DO BOTÃO ALTERADO -->
         <button id="download-btn" class="bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition-all shadow-lg transform hover:scale-105">
-            Baixar Carteirinha para Impressão
+            Baixar Carteirinha
         </button>
     </div>
 
@@ -145,7 +148,7 @@
             html2canvas(printableCardElement, {
                 useCORS: true,
                 scale: 3, // Aumenta a resolução da imagem para impressão
-                backgroundColor: null // **CORREÇÃO APLICADA AQUI** para manter os cantos arredondados
+                backgroundColor: null 
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'carteirinha-asselm-impressao.png';
