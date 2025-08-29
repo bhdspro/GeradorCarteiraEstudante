@@ -23,6 +23,14 @@
             print-color-adjust: exact;
         }
 
+        /* --- NOVOS ESTILOS PARA O TAMANHO FÍSICO --- */
+        .printable-card-size {
+            /* Tamanho base em pixels para o download da imagem */
+            width: 340px; 
+            /* A altura será automática, definida pelo conteúdo */
+        }
+
+
         /* Styles for print version */
         @media print {
             body {
@@ -37,107 +45,123 @@
                 align-items: center;
                 justify-content: center;
             }
-            .card-container {
-                 border: 1px solid #ccc;
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .printable-card-size {
+                /* Tamanho físico real para impressão (um pouco maior que cartão de crédito) */
+                width: 9cm !important;
+                height: 12cm !important;
             }
         }
     </style>
 </head>
 <body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
 
-    <div class="card-container-wrapper">
-        <!-- The Card Element -->
-        <div id="member-card" class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden">
-            <!-- Card Header -->
+    <!-- Digital Card (Visible on screen - TAMANHO GRANDE) -->
+    <div class="card-container-wrapper no-print">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden">
             <div class="bg-blue-900 p-5 text-white">
                 <div class="flex items-center justify-between">
-                    <a href="#" class="text-3xl font-bold text-white">
-                        <span class="text-red-500">AS</span>SELM
-                    </a>
+                    <a href="#" class="text-3xl font-bold text-white"><span class="text-red-500">AS</span>SELM</a>
                     <span class="text-sm font-semibold uppercase tracking-wider">Associado</span>
                 </div>
             </div>
-
-            <!-- Card Body -->
             <div class="p-6">
                 <div class="flex flex-col items-center text-center">
-                    
-                    <!-- ATENÇÃO: Substitua o 'src' abaixo pelo link permanente da foto do associado -->
-                    <img src="https://i.ibb.co/pBD3TcZX/Imagem-do-Whats-App-de-2025-08-29-s-15-50-47-abe376e8.jpg" crossorigin="anonymous" alt="Foto do Associado" class="w-24 h-24 rounded-full border-4 border-white -mt-16 shadow-lg object-cover">
-                    
+                    <!-- FOTO DE PERFIL CORRIGIDA -->
+                    <img src="https://placehold.co/128x128/EFEFEF/3B82F6?text=Avatar" crossorigin="anonymous" alt="Foto do Associado" class="w-32 h-32 rounded-full border-4 border-white -mt-16 shadow-lg object-cover">
                     <h1 class="text-2xl font-bold text-gray-800 mt-4">Alexsandra Ramos da Silva Santos</h1>
-                    
                     <div class="w-full text-left mt-6 space-y-3 text-gray-700">
-                        <div class="flex justify-between border-b pb-2">
-                            <span class="font-semibold text-gray-500">Nascimento:</span>
-                            <span class="font-medium">27/06/1996</span>
-                        </div>
-                        <div class="flex justify-between border-b pb-2">
-                            <span class="font-semibold text-gray-500">CPF:</span>
-                            <span class="font-medium">101.613.***-62</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-semibold text-gray-500">Status:</span>
-                            <span class="font-bold text-green-600">Ativo desde 2024</span>
-                        </div>
-                    </div>
-
-                    <!-- QR Code - Container ajustado para garantir centralização -->
-                    <div id="qr-code-container" class="hidden flex w-full mt-6 flex-col items-center print:flex">
-                        <img 
-                            src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://asselm.com.br/associados/alexsandra-santos" 
-                            alt="QR Code de Verificação" 
-                            class="w-32 h-32">
-                        <p class="text-xs text-gray-500 mt-2">Aponte a câmera e verifique o status do associado</p>
+                        <div class="flex justify-between border-b pb-2"><span class="font-semibold text-gray-500">Nascimento:</span><span class="font-medium">27/06/1996</span></div>
+                        <div class="flex justify-between border-b pb-2"><span class="font-semibold text-gray-500">CPF:</span><span class="font-medium">101.613.***-62</span></div>
+                        <div class="flex justify-between"><span class="font-semibold text-gray-500">Status:</span><span class="font-bold text-green-600">Ativo desde 2024</span></div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Card Footer -->
-            <div class="bg-gray-50 text-center p-3">
-                 <p class="text-xs text-gray-500">Associação de Empreendedores de Londrina e Região</p>
+            <div class="bg-gray-50 text-center p-3"><p class="text-xs text-gray-500">Associação de Empreendedores de Londrina e Região</p></div>
+        </div>
+    </div>
+    
+    <!-- Printable Card (Hidden on screen, TAMANHO DE CARTÃO) -->
+    <div id="printable-card" class="hidden print-only bg-white printable-card-size rounded-2xl shadow-xl overflow-hidden">
+        <div class="flex flex-col h-full">
+            <!-- Front Side (Top) -->
+            <div class="w-full h-1/2">
+                <div class="bg-blue-900 p-5 text-white">
+                    <div class="flex items-center justify-between">
+                        <a href="#" class="text-2xl font-bold text-white"><span class="text-red-500">AS</span>SELM</a>
+                        <span class="text-sm font-semibold uppercase tracking-wider">Associado</span>
+                    </div>
+                </div>
+                <div class="p-4"> 
+                    <div class="flex flex-col items-center text-center">
+                        <!-- FOTO DE PERFIL CORRIGIDA -->
+                        <!-- ATENÇÃO: Substitua o 'src' abaixo pelo link permanente da foto do associado -->
+                        <!-- **CORREÇÃO APLICADA AQUI** Margem superior negativa reduzida para -mt-14 -->
+                        <img src="https://apps.grupobhds.com/asselm/associados/alexsandra-silva/foto.jpg" crossorigin="anonymous" alt="Foto do Associado" class="w-28 h-28 rounded-full border-4 border-white -mt-14 shadow-lg object-cover">
+                        <h1 class="text-lg font-bold text-gray-800 mt-3">Alexsandra Ramos da Silva Santos</h1>
+                        <div class="w-full text-left mt-3 space-y-1 text-xs text-gray-700">
+                            <div class="flex justify-between border-b pb-3"><span class="font-semibold text-gray-500">Nascimento:</span><span class="font-medium">27/06/1996</span></div>
+                            <div class="flex justify-between border-b pb-3"><span class="font-semibold text-gray-500">CPF:</span><span class="font-medium">101.613.***-62</span></div>
+                            <div class="flex justify-between pt-1"><span class="font-semibold text-gray-500">Status:</span><span class="font-bold text-green-600">Ativo desde 2024</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Separator -->
+            <div class="border-t border-dashed border-gray-200"></div>
+
+            <!-- Back Side (Bottom) -->
+            <div class="w-full h-1/2 p-4 flex flex-col items-center justify-center">
+                <div class="text-center">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://asselm.com.br/associados/alexsandra-santos" alt="QR Code de Verificação" class="w-28 h-28 mx-auto">
+                    <div class="bg-gray-50 text-center p-2 mt-2 rounded-b-xl">
+                        <p class="text-[10px] text-gray-500">Associação de Empreendedores de Londrina e Região</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+
     <!-- Download Button - Hidden on print -->
-    <div class="print:hidden mt-6 text-center">
+    <div class="no-print mt-6 text-center">
         <button id="download-btn" class="bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition-all shadow-lg transform hover:scale-105">
-            Baixar Carteirinha
+            Baixar Carteirinha para Impressão
         </button>
     </div>
 
     <script>
         document.getElementById('download-btn').addEventListener('click', function() {
-            const cardElement = document.getElementById('member-card');
-            const qrCodeContainer = document.getElementById('qr-code-container');
-
-            // Make QR Code visible for the screenshot
-            qrCodeContainer.classList.remove('hidden');
+            const printableCardElement = document.getElementById('printable-card');
             
-            // Use html2canvas to capture the card element
-            html2canvas(cardElement, {
-                useCORS: true, // Important for external images if any
-                scale: 2 // Increase scale for better resolution
+            // Temporarily make the printable card visible to capture it
+            printableCardElement.classList.remove('hidden');
+
+            html2canvas(printableCardElement, {
+                useCORS: true,
+                scale: 3, // Aumenta a resolução da imagem para impressão
+                backgroundColor: null // **CORREÇÃO APLICADA AQUI** para manter os cantos arredondados
             }).then(canvas => {
-                // Create a temporary link element
                 const link = document.createElement('a');
                 link.download = 'carteirinha-asselm-impressao.png';
                 link.href = canvas.toDataURL('image/png');
-                
-                // Trigger the download
                 link.click();
-
-                // Hide the QR code again from the screen view
-                qrCodeContainer.classList.add('hidden');
+                
+                // Hide the printable card again after capture
+                printableCardElement.classList.add('hidden');
             }).catch(err => {
-                // In case of error, also hide the QR code and log it
-                console.error("Ocorreu um erro ao gerar a imagem da carteirinha:", err);
-                qrCodeContainer.classList.add('hidden');
+                console.error("Ocorreu um erro ao gerar a imagem:", err);
+                // Ensure it's hidden even if an error occurs
+                printableCardElement.classList.add('hidden');
             });
         });
     </script>
 </body>
 </html>
-
 
